@@ -52,8 +52,16 @@ public class TargetChosenReceiver extends BroadcastReceiver {
         Intent intent = new Intent(sTargetChosenReceiveAction);
         intent.setPackage(reactContext.getPackageName());
         intent.putExtra(EXTRA_RECEIVER_TOKEN, sLastRegisteredReceiver.hashCode());
-        final PendingIntent callback = PendingIntent.getBroadcast(reactContext, 0, intent,
+        PendingIntent callback = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            callback = PendingIntent.getBroadcast(reactContext, 0, intent,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
+        }else{
+            callback = PendingIntent.getBroadcast(reactContext, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        }
+        // final PendingIntent callback = PendingIntent.getBroadcast(reactContext, 0, intent,
+        //         PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         return callback.getIntentSender();
     }
